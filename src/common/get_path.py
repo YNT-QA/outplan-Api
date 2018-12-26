@@ -10,5 +10,5 @@ class GetPath():
 
 
     def get_filePath(self):
-        filePath = os.path.dirname(os.path.abspath('../..')) + '\\' + 'outPlan' + '\\' + self.path    #win/linux路径不同，需要修改
+        filePath = os.path.dirname(os.path.abspath('../..')) + '\\' + 'outPlan-Api' + '\\' + self.path    #win/linux路径不同，需要修改
         return filePath
