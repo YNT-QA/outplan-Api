@@ -8,7 +8,7 @@ from common.get_path import GetPath
 
 class GetValue():
 
-     def __init__(self,datapath='data\\params.txt'):             #win/linux路径不同，需要修改
+     def __init__(self,datapath='data\\userinfo.txt'):             #win/linux路径不同，需要修改
          path=GetPath(datapath)
          self.datapath= path.get_filePath()
 

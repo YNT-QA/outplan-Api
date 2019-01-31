@@ -10,3 +10,4 @@ report_path=report\\
 cases_path=src\\testCases\\
 title=外呼计划api测试报告
 description=测试情况
+sceneName=autoTest
