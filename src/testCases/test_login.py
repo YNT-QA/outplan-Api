@@ -6,26 +6,23 @@ import sys
 sys.path.append('..')
 from modules.login import Login
 import unittest
-from common.get_value import GetValue
+from data.userinfo import *
 
 class TestLogin(unittest.TestCase):
      lg=None
      data=None
      token=None
      def setUp(self):
-         global lg,data,path
-
-         data = GetValue()
-
-         lg = Login(data.getvalue('product_address'))
+         global lg
+         lg = Login(product_address)
 
      def test_login(self):
-         global lg,data,token
-         res = lg.login(data.getvalue('account'),data.getvalue('product_password'))
+         '''登录'''
+         global lg,token
+         res = lg.login(account,product_password)
          token=res['data']['token']
-         self.assertEqual(res['data']['userName'],data.getvalue('account'))
+         self.assertEqual(res['data']['userName'],account)
          self.assertEqual(res['data']['accountType'], 1)
-
 
      def tearDown(self):
          logout = lg.logout(token)

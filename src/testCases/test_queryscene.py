@@ -5,32 +5,30 @@
 import sys
 sys.path.append('..')
 import unittest
-from common.get_value import GetValue
 from modules.login import Login
 from modules.queryscene import QueryScene
+from data.userinfo import *
 
 class TestQueryScene(unittest.TestCase):
     lg = None
-    data = None
     qs=None
     token=None
+
     def setUp(self):
-        global lg,data,token
+        global lg,token
 
-        data = GetValue()
+        lg = Login(product_address)
 
-        lg = Login(data.getvalue('uat_address'))
-
-        res = lg.login(data.getvalue('account'), data.getvalue('uat_password'))
+        res = lg.login(account,product_password)
         token=res['data']['token']
-        self.assertEqual(res['data']['userName'], data.getvalue('account'))
+        self.assertEqual(res['data']['userName'],account)
         self.assertEqual(res['data']['accountType'], 1)
 
     def test_queryScene(self):
-        global qs,data
+        global qs
 
-        qs=QueryScene(data.getvalue('uat_address'))
-        res=qs.get_queryscene(data.getvalue('userid'),token)
+        qs=QueryScene(product_address)
+        res=qs.get_queryscene(userid,token)
 
         self.assertEqual(res['success'],True)
 

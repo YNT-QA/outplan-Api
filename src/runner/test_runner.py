@@ -7,32 +7,28 @@ sys.path.append('..')
 import HTMLTestRunner
 import unittest
 import datetime
-from common.get_path import GetPath
-from common.get_value import GetValue
 from common.smtp import Smtp
+from data.userinfo import *
+import os
 
 class Runner(unittest.TestCase):
     runner=None
     path=None
-    data=None
 
     def report(self):
-        global path,data
-
-        data=GetValue()
+        global path
         now_time = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        path=GetPath(data.getvalue('report_path')+'%s.html'%now_time)
-        report_path=path.get_filePath()
+        report_path=os.path.dirname(os.path.abspath('../.'))+'\\'+Report_path + '%s.html'%now_time
 
         with open(report_path,'wb') as fp:
             global runner
-            runner = HTMLTestRunner.HTMLTestRunner(stream=fp,title=data.getvalue('title'),description=data.getvalue('description'))
+            runner = HTMLTestRunner.HTMLTestRunner(stream=fp,title=title,description=description)
 
             suiteTest = unittest.TestSuite()
 
-            path=GetPath(data.getvalue('cases_path'))
+            casespath=os.path.dirname(os.path.abspath('../.'))+'\\'+cases_path
 
-            all_cases=unittest.defaultTestLoader.discover(path.get_filePath(),'test_*.py')
+            all_cases=unittest.defaultTestLoader.discover(casespath,'test_*.py')
 
             for case in all_cases:
 

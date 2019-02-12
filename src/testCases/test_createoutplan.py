@@ -5,7 +5,6 @@
 import sys
 sys.path.append('..')
 import unittest
-from common.get_value import GetValue
 from modules.login import Login
 from modules.outplan import OutPlan
 from modules.customer_manage import CustomerManage
@@ -13,10 +12,10 @@ from common.mongodb import Mongodb
 import time
 from modules.sip_manage import sipManage
 from common.mysql import Mysql
+from data.userinfo import *
 
 class TestCreateOutPlan(unittest.TestCase):
     lg = None
-    data = None
     token= None
     groupId= None
     csm= None
@@ -27,21 +26,20 @@ class TestCreateOutPlan(unittest.TestCase):
     group_number = None
 
     def setUp(self):
-        global lg,data,token,groupId,csm,planId,auto_test,sip,sip_id,group_number
+        global lg,token,groupId,csm,planId,auto_test,sip,sip_id,group_number
 
-        data = GetValue()
         #登录
-        lg = Login(data.getvalue('product_address'))
-        res = lg.login(data.getvalue('account'), data.getvalue('product_password'))
+        lg = Login(product_address)
+        res = lg.login(account,product_password)
         token=res['data']['token']
-        self.assertEqual(res['data']['userName'], data.getvalue('account'))
+        self.assertEqual(res['data']['userName'],account)
         self.assertEqual(res['data']['accountType'], 1)
 
         #创建客户组手动上传号码
-        csm=CustomerManage(data.getvalue('product_address'))
-        res2=csm.addPhoneNumber(token,data.getvalue('userid'),['17200001999'],1,'autoTest')
+        csm=CustomerManage(product_address)
+        res2=csm.addPhoneNumber(token,userid,['17200001999'],1,'autoTest')
         self.assertEqual(res2['status'], 1000)
-        self.assertEqual(res2['msg'], '操作成功')
+        self.assertEqual(res2['msg'],'导入成功')
 
         #查询mongodb获取groupId
         product=Mongodb('outbound_product','phone_number','172.20.10.20',27017)
@@ -51,7 +49,7 @@ class TestCreateOutPlan(unittest.TestCase):
             groupId=item['groupId']
 
         # 添加SIP
-        sip = sipManage(data.getvalue('product_address'))
+        sip = sipManage(product_address)
         res = sip.add_sip(token)
         self.assertEqual(res['status'], 1000)
         self.assertEqual(res['msg'], '操作成功')
@@ -65,9 +63,10 @@ class TestCreateOutPlan(unittest.TestCase):
             group_number = row[1]
 
     def test_createplan(self):
-        global data,planId,auto_test
-        auto_test=OutPlan(data.getvalue('product_address'))
-        res=auto_test.creat_outplan(token,data.getvalue('userid'),'3706','autoTest','尚德销售纵线白名单',sip_id,groupId)
+        '''创建外呼计划'''
+        global planId,auto_test
+        auto_test=OutPlan(product_address)
+        res=auto_test.creat_outplan(token,userid,'3706','autoTest','尚德销售纵线白名单',sip_id,groupId)
         planId=res['data']['planId']
         self.assertEqual(res['status'],1000)
         self.assertEqual(res['msg'],'操作成功')
@@ -76,7 +75,7 @@ class TestCreateOutPlan(unittest.TestCase):
         #删除客户组与号码
         res=csm.deleteGroupAndCustomerPhone(token,groupId)
         self.assertEqual(res['status'], 1000)
-        self.assertEqual(res['msg'], '操作成功')
+        self.assertEqual(res['msg'], '删除成功')
 
         #查询mongodb外呼计划状态
         product = Mongodb('outbound_product', 'call_log', '172.20.10.20', 27017)
