@@ -15,15 +15,15 @@ class OutPlan():
         self.againOutPlan_url='/outTask/createAgainOutPlan.do'
 
     #form-data,创建计划
-    def creat_outplan(self,token,userId,sceneId,planName,sceneName,sip_id,groupId):
+    def creat_outplan(self,token,userId,sceneId,planName,sceneName,sip_id,groupId,callType='2',createType='2'):
 
         data=MultipartEncoder(fields={'userId':userId,
                                       'sceneId':sceneId,
-                                      'callType':'2',
+                                      'callType':callType,
                                       'planName':planName,
                                       'sceneName':sceneName,
                                       'sipIds':str(sip_id),
-                                      'createType':'2','groupIds':str(groupId)})
+                                      'createType':createType,'groupIds':str(groupId)})
         headers = {'Content-Type':data.content_type, 'token': token}
 
         res=requests.post(url=self.address+self.addCallLog_url,headers=headers,data=data)
@@ -45,10 +45,10 @@ class OutPlan():
         return json.loads(res.text)
 
     #创建二次外呼
-    def create_AgainOutPlan(self,token,userId,sceneId,sceneName,sip_id,phoneId):
+    def create_AgainOutPlan(self,token,userId,sceneId,sceneName,sip_id,phoneId,planName2,callType=2,createType=1):
         headers = {'Content-Type': 'application/json', 'token': token}
-        data = {'userId': userId,'sceneId': sceneId,'callType': 2,'planName': 'autoTest二次外呼',
-                'sceneName':sceneName,'sipIds':str(sip_id),'createType': 1,'phoneIds': phoneId}
+        data = {'userId': userId,'sceneId': sceneId,'callType': callType,'planName': planName2,
+                'sceneName':sceneName,'sipIds':str(sip_id),'createType': createType,'phoneIds': phoneId}
         res = requests.post(self.address + self.againOutPlan_url, headers=headers, data=json.dumps(data))
         return json.loads(res.text)
 

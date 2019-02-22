@@ -35,5 +35,5 @@ class TestQueryScene(unittest.TestCase):
 
     def tearDown(self):
         logout=lg.logout(token)
-        self.assertEqual(logout['status'],1000)
-        self.assertEqual(logout['msg'],'操作成功')
+        self.assertEqual(logout['status'],code_1000)
+        self.assertEqual(logout['msg'],success)

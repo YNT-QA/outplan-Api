@@ -15,19 +15,11 @@ class Login():
     def login(self,account,password):
         headers = {'Content-Type': 'application/json'}
         data={'userName':account,'password':password}
+        res=requests.post(self.address+self.login_url,headers=headers,data=json.dumps(data))
+        return  json.loads(res.text)
 
-        try:
-            res=requests.post(self.address+self.login_url,headers=headers,data=json.dumps(data))
-            return  json.loads(res.text)
-        except Exception as e:
-            print(e)
 
     def logout(self,token):
         headers = {'Content-Type':'application/json','token':token}
-
-        try:
-            res=requests.get(self.address+self.logout_url,headers=headers)
-            return  json.loads(res.text)
-        except Exception as e:
-            print(e)
-
+        res=requests.get(self.address+self.logout_url,headers=headers)
+        return  json.loads(res.text)
