@@ -20,14 +20,14 @@ class TestLogin(unittest.TestCase):
          '''登录'''
          global lg,token
          res = lg.login(account,product_password)
-         token=res['data']['token']
          self.assertEqual(res['data']['userName'],account)
          self.assertEqual(res['data']['accountType'], 1)
+         token = res['data']['token']
 
      def tearDown(self):
          logout = lg.logout(token)
-         self.assertEqual(logout['status'], 1000)
-         self.assertEqual(logout['msg'], '操作成功')
+         self.assertEqual(logout['status'], code_1000)
+         self.assertEqual(logout['msg'],success)
 
 
 
