@@ -10,7 +10,6 @@ from data.userinfo import *
 
 class TestLogin(unittest.TestCase):
      lg=None
-     data=None
      token=None
      def setUp(self):
          global lg
