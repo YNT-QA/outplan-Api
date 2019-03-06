@@ -8,7 +8,6 @@ from data.userinfo import *
 
 class TestLoginCms(unittest.TestCase):
      user=None
-     data=None
      token=None
      def setUp(self):
          global user
