@@ -44,7 +44,7 @@ class TestModifyAcc(unittest.TestCase):
         '''修改正式账号'''
         res=newuser.modify_account(token,userid,indtypes)
         flag=False
-        for i in range(time):
+        for i in range(time_out):
             try:
                 self.assertEqual(res['status'], code_1000)
                 self.assertEqual(res['msg'],success)
@@ -56,11 +56,14 @@ class TestModifyAcc(unittest.TestCase):
         self.assertTrue(flag)
 
     def tearDown(self):
-        res = newuser.delete_account(token,userid)
-        self.assertEqual(res[0]['status'],code_1000)
-        self.assertEqual(res[0]['data']['msg'],'任务已经全部结束')
-        self.assertEqual(res[1]['status'],code_1000)
-        self.assertEqual(res[1]['data'],2)
+        # 删除用户
+        res = newuser.delete_account(token, userid)
+        result = res(newuser.cdc_url_cms)
+        self.assertEqual(result['status'], code_1000)
+        self.assertEqual(result['data']['msg'], '任务已经全部结束')
+        result2 = res(newuser.isak_url_cms)
+        self.assertEqual(result2['status'], code_1000)
+        self.assertEqual(result2['data'], 2)
 
         logout = user.logout_cms(token)
         self.assertEqual(logout['status'],code_1000)

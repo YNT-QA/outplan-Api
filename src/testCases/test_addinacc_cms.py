@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 # 作者: 顾名思义
-# 时间: 2019/2/28 15:52
-# 文件: test_adduser_cms.py
+# 时间: 2019/3/6 17:39
+# 文件: test_addinacc_cms.py
 import unittest
 from src.modules.login_cms import LoginCms
 from data.userinfo import *
 from src.modules.accmanage_cms import AccManage
 from src.common.mysql import Mysql
 from time import sleep
+import time
 
-class TestAddUser(unittest.TestCase):
+class TestInAcc(unittest.TestCase):
     user = None
     token = None
     newuser=None
@@ -24,11 +25,11 @@ class TestAddUser(unittest.TestCase):
         self.assertEqual(res['data']['userId'],32)
         token = res['data']['token']
 
-    def test_adduser(self):
-        u'''添加正式账号'''
+    def test_addinacc(self):
+        u'''添加内部测试账号'''
         global newuser,userid
         newuser=AccManage(pro_add_cms)
-        res=newuser.add_user(token,new_user,pswd,mob_phone,auto_name)
+        res=newuser.add_user(token,new_user,pswd,mob_phone,auto_name,accounttype=2,agentexpiredate=time.strftime('%Y-%m-%d',time.localtime()))
         #查询数据库获取userid
         product_m = Mysql(myq_ip,myq_port,myq_user,myq_pswd,dbname)
         con = product_m.connect_mysql()
@@ -45,13 +46,13 @@ class TestAddUser(unittest.TestCase):
 
     def tearDown(self):
         #删除用户
-        res = newuser.delete_account(token, userid)
+        res = newuser.delete_account(token,userid)
         result = res(newuser.cdc_url_cms)
-        self.assertEqual(result['status'], code_1000)
-        self.assertEqual(result['data']['msg'], '任务已经全部结束')
+        self.assertEqual(result['status'],code_1000)
+        self.assertEqual(result['data']['msg'],'任务已经全部结束')
         result2 = res(newuser.isak_url_cms)
-        self.assertEqual(result2['status'], code_1000)
-        self.assertEqual(result2['data'], 2)
+        self.assertEqual(result2['status'],code_1000)
+        self.assertEqual(result2['data'],2)
         #退出
         logout = user.logout_cms(token)
         self.assertEqual(logout['status'],code_1000)

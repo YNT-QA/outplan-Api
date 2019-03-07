@@ -34,7 +34,7 @@ class TestAddSceneTemp(unittest.TestCase):
         product_m = Mysql(myq_ip, myq_port, myq_user, myq_pswd, dbname)
         con = product_m.connect_mysql()
         flag = False
-        for i in range(time):
+        for i in range(time_out):
             try:
                 self.assertEqual(res['status'],code_1000)
                 self.assertEqual(res['msg'],success)
@@ -52,7 +52,7 @@ class TestAddSceneTemp(unittest.TestCase):
         #删除示例场景库
         res=scenetemp.delete_scenetemp(token,s_id)
         flag = False
-        for i in range(time):
+        for i in range(time_out):
             try:
                 self.assertEqual(res['status'],code_1000)
                 self.assertEqual(res['msg'],success)

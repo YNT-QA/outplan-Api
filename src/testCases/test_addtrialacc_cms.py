@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # 作者: 顾名思义
-# 时间: 2019/2/28 15:52
-# 文件: test_adduser_cms.py
+# 时间: 2019/3/7 15:29
+# 文件: test_addtrialacc_cms.py
 import unittest
 from src.modules.login_cms import LoginCms
 from data.userinfo import *
@@ -9,7 +9,7 @@ from src.modules.accmanage_cms import AccManage
 from src.common.mysql import Mysql
 from time import sleep
 
-class TestAddUser(unittest.TestCase):
+class TestTrialAcc(unittest.TestCase):
     user = None
     token = None
     newuser=None
@@ -24,11 +24,11 @@ class TestAddUser(unittest.TestCase):
         self.assertEqual(res['data']['userId'],32)
         token = res['data']['token']
 
-    def test_adduser(self):
-        u'''添加正式账号'''
+    def test_addtrialacc(self):
+        u'''添加试用账号'''
         global newuser,userid
         newuser=AccManage(pro_add_cms)
-        res=newuser.add_user(token,new_user,pswd,mob_phone,auto_name)
+        res=newuser.add_user(token,new_user,pswd,mob_phone,auto_name,accounttype=4)
         #查询数据库获取userid
         product_m = Mysql(myq_ip,myq_port,myq_user,myq_pswd,dbname)
         con = product_m.connect_mysql()
@@ -39,19 +39,19 @@ class TestAddUser(unittest.TestCase):
                 userid = row[0]
                 flag = False
             sleep(1)
-
+        self.assertEqual(res['data'],'账号创建成功')
         self.assertEqual(res['status'],code_1000)
         self.assertEqual(res['msg'],success)
 
     def tearDown(self):
         #删除用户
-        res = newuser.delete_account(token, userid)
-        result = res(newuser.cdc_url_cms)
-        self.assertEqual(result['status'], code_1000)
-        self.assertEqual(result['data']['msg'], '任务已经全部结束')
-        result2 = res(newuser.isak_url_cms)
-        self.assertEqual(result2['status'], code_1000)
-        self.assertEqual(result2['data'], 2)
+        res=newuser.delete_account(token,userid)
+        result=res(newuser.cdc_url_cms)
+        self.assertEqual(result['status'],code_1000)
+        self.assertEqual(result['data']['msg'],'任务已经全部结束')
+        result2=res(newuser.isak_url_cms)
+        self.assertEqual(result2['status'],code_1000)
+        self.assertEqual(result2['data'],2)
         #退出
         logout = user.logout_cms(token)
         self.assertEqual(logout['status'],code_1000)
