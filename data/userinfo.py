@@ -38,4 +38,4 @@ new_user='autotest@ynt.ai'
 mob_phone='15666666666'
 pswd='ynt123'
 indtypes=[20,21,39,22,23,24,25,34,35,36,37,38]
-time=20
+time_out=20

@@ -9,6 +9,7 @@ class AccManage():
     def __init__(self,address):
         self.address=address
         self.adduser_url_cms='/custManager/formal'
+        self.informal='/custManager/informal'
         self.cdc_url_cms='/custManager/checkDeleteCondition'
         self.isak_url_cms='/custManager/isStopAndKill'
         self.updateFormalInfo='/custManager/updateFormalInfo'
@@ -23,7 +24,7 @@ class AccManage():
     其他类：34,35,36,37,38
     '''
     #添加账号
-    def add_user(self,token,email,password,phone,companyname,accountstatus=1,accounttype=1,plantype='1'):
+    def add_user(self,token,email,password,phone,companyname,agentnum=1,agentexpiredate=None,accountstatus=1,accounttype=1,plantype='1'):
         headers = {'Content-Type': 'application/json','token':token}
         data ={
                 "user": {
@@ -41,18 +42,36 @@ class AccManage():
                     "sipType": "0,1"
                 }
              }
-        res = requests.post(self.address +self.adduser_url_cms,headers=headers,data=json.dumps(data))
+
+        if accounttype==2:      #内部测试
+            data['user']['effectual']='-1'
+            data['user']['agentNum'] = agentnum
+            data['user']['agentExpireDate'] = agentexpiredate
+            addu_url = self.informal
+        elif accounttype==4:    #试用账号
+            data['user']['effectual'] = '3day'
+            data['user']['followUp'] = 'autotest'
+            addu_url = self.informal
+        elif accounttype==3:    #外部测试
+            data['user']['agentNum']=agentnum
+            data['user']['agentExpireDate']=agentexpiredate
+            addu_url=self.informal
+        else:                   #正式
+            addu_url=self.adduser_url_cms
+
+        res = requests.post(self.address + addu_url,headers=headers,data=json.dumps(data))
         return json.loads(res.text)
 
     #删除账号
     def delete_account(self,token,uids):
-        headers = {'Content-Type': 'application/json', 'token': token}
+        headers = {'Content-Type': 'application/json','token':token}
         data ={"uids":[uids]}
-        res1 = requests.post(self.address+self.cdc_url_cms,headers=headers,data=json.dumps(data))
-        r1=json.loads(res1.text)
-        res2 = requests.post(self.address+self.isak_url_cms,headers=headers,data=json.dumps(data))
-        r2=json.loads(res2.text)
-        return [r1,r2]
+
+        def get_request(url):
+            res = requests.post(self.address + url,headers=headers,data=json.dumps(data))
+            return json.loads(res.text)
+
+        return get_request
 
     #修改账号
     def modify_account(self,token,userid,industrytypes,scenecount=10):
