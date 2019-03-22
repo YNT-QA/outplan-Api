@@ -13,11 +13,11 @@ class TestModifyAcc(unittest.TestCase):
     user = None
     token = None
     newuser = None
-    userid = None
+    user_id = None
 
     def setUp(self):
         # 登录外呼后台
-        global token, user,userid,newuser
+        global token, user,user_id,newuser
         user = LoginCms(pro_add_cms)
         res = user.login_cms(acc_cms, pawd_cms)
         self.assertEqual(res['data']['realName'], '顾荣荣')
@@ -33,7 +33,7 @@ class TestModifyAcc(unittest.TestCase):
         while flag:
             res2 = product_m.mysql_select(con[0],"SELECT id FROM user where username='%s' and account_status=1" % new_user)
             for row in res2:
-                userid = row[0]
+                user_id = row[0]
                 flag = False
             sleep(1)
 
@@ -42,7 +42,7 @@ class TestModifyAcc(unittest.TestCase):
 
     def test_modifyaccount(self):
         '''修改正式账号'''
-        res=newuser.modify_account(token,userid,indtypes)
+        res=newuser.modify_account(token,user_id,indtypes)
         flag=False
         for i in range(time_out):
             try:
@@ -57,7 +57,7 @@ class TestModifyAcc(unittest.TestCase):
 
     def tearDown(self):
         # 删除用户
-        res = newuser.delete_account(token, userid)
+        res = newuser.delete_account(token, user_id)
         result = res(newuser.cdc_url_cms)
         self.assertEqual(result['status'], code_1000)
         self.assertEqual(result['data']['msg'], '任务已经全部结束')

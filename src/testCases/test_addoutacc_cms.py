@@ -14,7 +14,7 @@ class TestOutAcc(unittest.TestCase):
     user = None
     token = None
     newuser=None
-    userid=None
+    user_id=None
 
     def setUp(self):
         #登录外呼后台
@@ -27,7 +27,7 @@ class TestOutAcc(unittest.TestCase):
 
     def test_addoutacc(self):
         u'''添加外部测试账号'''
-        global newuser,userid
+        global newuser,user_id
         newuser=AccManage(pro_add_cms)
         res=newuser.add_user(token,new_user,pswd,mob_phone,auto_name,accounttype=3,agentexpiredate=time.strftime('%Y-%m-%d',time.localtime()))
         #查询数据库获取userid
@@ -37,7 +37,7 @@ class TestOutAcc(unittest.TestCase):
         while flag:
             res2 = product_m.mysql_select(con[0], "SELECT id FROM user where username='%s' and account_status=1"%new_user)
             for row in res2:
-                userid = row[0]
+                user_id = row[0]
                 flag = False
             sleep(1)
 
@@ -46,7 +46,7 @@ class TestOutAcc(unittest.TestCase):
 
     def tearDown(self):
         #删除用户
-        res =newuser.delete_account(token, userid)
+        res =newuser.delete_account(token, user_id)
         result = res(newuser.cdc_url_cms)
         self.assertEqual(result['status'],code_1000)
         self.assertEqual(result['data']['msg'],'任务已经全部结束')
