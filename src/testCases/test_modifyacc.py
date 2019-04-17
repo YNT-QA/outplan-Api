@@ -16,7 +16,7 @@ class TestModifyAcc(unittest.TestCase):
     user_id = None
 
     def setUp(self):
-        # 登录外呼后台
+        #登录外呼后台
         global token, user,user_id,newuser
         user = LoginCms(pro_add_cms)
         res = user.login_cms(acc_cms, pawd_cms)
@@ -26,23 +26,25 @@ class TestModifyAcc(unittest.TestCase):
         #添加正式账号
         newuser = AccManage(pro_add_cms)
         res = newuser.add_user(token, new_user, pswd, mob_phone, auto_name)
+        self.assertEqual(res['status'], code_1000)
+        self.assertEqual(res['msg'], success)
         #查询数据库获取userid
         product_m = Mysql(myq_ip, myq_port, myq_user, myq_pswd, dbname)
         con = product_m.connect_mysql()
-        flag = True
-        while flag:
+        flag = False
+        for i in range(time_out):
             res2 = product_m.mysql_select(con[0],"SELECT id FROM user where username='%s' and account_status=1" % new_user)
             for row in res2:
                 user_id = row[0]
-                flag = False
+                flag = True
             sleep(1)
 
-        self.assertEqual(res['status'],code_1000)
-        self.assertEqual(res['msg'],success)
+        self.assertTrue(flag)
 
     def test_modifyaccount(self):
         '''修改正式账号'''
         res=newuser.modify_account(token,user_id,indtypes)
+
         flag=False
         for i in range(time_out):
             try:
@@ -56,7 +58,7 @@ class TestModifyAcc(unittest.TestCase):
         self.assertTrue(flag)
 
     def tearDown(self):
-        # 删除用户
+        #删除用户
         res = newuser.delete_account(token, user_id)
         result = res(newuser.cdc_url_cms)
         self.assertEqual(result['status'], code_1000)
