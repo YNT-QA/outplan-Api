@@ -24,7 +24,7 @@ class AccManage():
     其他类：34,35,36,37,38
     '''
     #添加账号
-    def add_user(self,token,email,password,phone,companyname,agentnum=1,agentexpiredate=None,accountstatus=1,accounttype=1,plantype='1'):
+    def add_user(self,token,email,password,phone,companyname,agentnum=1,agentexpiredate=None,accountstatus=1,accounttype=1,plantype='1',isOpen=1):
         headers = {'Content-Type': 'application/json','token':token}
         data ={
                 "user": {
@@ -55,8 +55,10 @@ class AccManage():
         elif accounttype==3:    #外部测试
             data['user']['agentNum']=agentnum
             data['user']['agentExpireDate']=agentexpiredate
+            data['user']['isOpen'] = isOpen
             addu_url=self.informal
         else:                   #正式
+            data['user']['isOpen'] = isOpen
             addu_url=self.adduser_url_cms
 
         res = requests.post(self.address + addu_url,headers=headers,data=json.dumps(data))
@@ -74,14 +76,15 @@ class AccManage():
         return get_request
 
     #修改账号
-    def modify_account(self,token,userid,industrytypes,scenecount=10):
+    def modify_account(self,token,userid,industrytypes,scenecount=10,isOpen=1):
         headers = {'Content-Type': 'application/json', 'token': token}
         data = {
             "userId": userid,
             "industryTypes": industrytypes,
             "companyName": "杰诺斯",
             "sceneTemplates": [1574,2775],
-            "sceneCount": scenecount
+            "sceneCount": scenecount,
+            "isOpen": isOpen
         }
         res = requests.post(self.address +self.updateFormalInfo, headers=headers,data=json.dumps(data))
         return json.loads(res.text)

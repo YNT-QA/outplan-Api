@@ -10,6 +10,7 @@ class SceneMangeCms():
         self.address=address
         self.insert='/scene/v1.1/insert'
         self.delete='/scene/v1.1/delete'
+        self.publish='/scene/v1.1/publish'
 
     #创建示例场景
     def create_scenetemple(self,token,scenename,industrytype=20):
@@ -23,4 +24,11 @@ class SceneMangeCms():
         headers = {'Content-Type': 'application/json', 'token': token}
         data ={"id":id}
         res = requests.post(self.address + self.delete, headers=headers, data=json.dumps(data))
+        return json.loads(res.text)
+
+    #场景发布
+    def scene_publish(self,token,id):
+        headers = {'Content-Type': 'application/json', 'token': token}
+        data = {"id": id}
+        res = requests.post(self.address + self.publish, headers=headers, data=json.dumps(data))
         return json.loads(res.text)

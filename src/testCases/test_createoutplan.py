@@ -50,7 +50,7 @@ class TestCreateOutPlan(unittest.TestCase):
 
         # 添加SIP
         sip = sipManage(product_address)
-        res = sip.add_sip(token,username,password,ip,port,privately,lineType,groupSize)
+        res = sip.add_sip(token,username,password,ip,port,comment,lineType,groupSize)
         self.assertEqual(res['status'],code_1000)
         self.assertEqual(res['msg'],success)
 
@@ -94,7 +94,7 @@ class TestCreateOutPlan(unittest.TestCase):
             time.sleep(1)
 
         #修改SIP禁用
-        res5 = sip.update_sip(token,group_number,sip_id,username,password,ip,port,privately,lineType,groupSize)
+        res5 = sip.update_sip(token,group_number,sip_id,username,comment,ip,port,privately,lineType,groupSize)
         self.assertEqual(res5['status'], code_1000)
         self.assertEqual(res5['msg'],success)
         #删除sip

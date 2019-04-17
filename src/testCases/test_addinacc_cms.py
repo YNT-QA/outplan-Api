@@ -30,19 +30,21 @@ class TestInAcc(unittest.TestCase):
         global newuser,user_id
         newuser=AccManage(pro_add_cms)
         res=newuser.add_user(token,new_user,pswd,mob_phone,auto_name,accounttype=2,agentexpiredate=time.strftime('%Y-%m-%d',time.localtime()))
+        self.assertEqual(res['status'], code_1000)
+        self.assertEqual(res['msg'], success)
         #查询数据库获取userid
         product_m = Mysql(myq_ip,myq_port,myq_user,myq_pswd,dbname)
         con = product_m.connect_mysql()
-        flag = True
-        while flag:
+        flag = False
+        for i in range(time_out):
             res2 = product_m.mysql_select(con[0], "SELECT id FROM user where username='%s' and account_status=1"%new_user)
             for row in res2:
                 user_id = row[0]
-                flag = False
+                flag = True
+                break
             sleep(1)
 
-        self.assertEqual(res['status'],code_1000)
-        self.assertEqual(res['msg'],success)
+        self.assertTrue(flag)
 
     def tearDown(self):
         #删除用户
