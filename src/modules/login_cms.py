@@ -7,10 +7,13 @@ import json
 import hashlib
 import rsa
 import base64
+from data.userinfo import *
+import unittest
 
-class LoginCms():
+class LoginCms(unittest.TestCase):
 
     def __init__(self,address):
+        unittest.TestCase.__init__(self)
         self.address=address
         self.logout_url_cms ='/permission/logout'
         self.login_url_cms='/permission/login'
@@ -19,6 +22,7 @@ class LoginCms():
     # 获取公钥
     def get_PublicKey(self):
         res = requests.get(self.address + self.getPublicKey)
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #外呼后台登录
@@ -46,11 +50,12 @@ class LoginCms():
         headers = {'Content-Type': 'application/json'}
         data={'userName':acc_cms,'password':str(base64.b64encode(pswd),'utf-8'),'publicKey':pubkey['data']}
         res=requests.post(self.address+self.login_url_cms,headers=headers,data=json.dumps(data))
-
+        self.assertTrue(res.status_code, code_200)
         return  json.loads(res.text)
 
     #外呼后台登出
     def logout_cms(self,token):
         headers = {'Content-Type':'application/json','token':token}
         res=requests.get(self.address+self.logout_url_cms,headers=headers)
+        self.assertTrue(res.status_code, code_200)
         return  json.loads(res.text)

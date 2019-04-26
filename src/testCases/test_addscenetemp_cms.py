@@ -21,7 +21,7 @@ class TestAddSceneTemp(unittest.TestCase):
         global token,user
         user = LoginCms(pro_add_cms)
         res = user.login_cms(acc_cms,pawd_cms)
-        self.assertEqual(res['data']['realName'],'顾荣荣')
+        self.assertEqual(res['data']['realName'],'顾荣荣',msg=msg1)
         self.assertEqual(res['data']['userId'],32)
         token = res['data']['token']
 
@@ -46,7 +46,7 @@ class TestAddSceneTemp(unittest.TestCase):
             except:
                 sleep(1)
 
-        self.assertTrue(flag)
+        self.assertTrue(flag,msg='查询数据库获取id失败')
 
     def tearDown(self):
         #删除示例场景库
@@ -63,5 +63,5 @@ class TestAddSceneTemp(unittest.TestCase):
         self.assertTrue(flag)
         #退出
         logout = user.logout_cms(token)
-        self.assertEqual(logout['status'], code_1000)
+        self.assertEqual(logout['status'], code_1000,msg=msg2)
         self.assertEqual(logout['msg'], success)

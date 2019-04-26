@@ -4,10 +4,13 @@
 # 文件: customer_manage.py
 import json
 import requests
+from data.userinfo import *
+import unittest
 
-class CustomerManage:
+class CustomerManage(unittest.TestCase):
 
     def __init__(self,address):
+        unittest.TestCase.__init__(self)
         self.address=address
         self.getPhoneNumList_url = '/customer/getPhoneNumList.do'
         self.getCustomerGroupById_url = '/customer/getCustomerGroupById.do'
@@ -22,6 +25,7 @@ class CustomerManage:
         headers = {'Content-Type': 'application/json','token':token}
         data={'userId':userId}
         res=requests.post(self.address+self.getPhoneNumList_url,headers=headers,data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #根据用户id获取客户组列表
@@ -29,6 +33,7 @@ class CustomerManage:
         headers = {'Content-Type': 'application/json','token':token}
         data = {'userId': userId}
         res = requests.post(self.address+self.getCustomerGroupById_url, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #新增客户组
@@ -36,6 +41,7 @@ class CustomerManage:
         headers = {'Content-Type': 'application/json','token':token}
         data = {'userId': userId,'groupName':groupName}
         res = requests.post(self.address+self.addCustomerGroup_url, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #手动添加号码
@@ -43,6 +49,7 @@ class CustomerManage:
         headers = {'Content-Type': 'application/json','token': token}
         data = {'userId': userId,'phoneNumberList':phoneNumberList,'groupTypeId':groupTypeId,'groupName': groupName}
         res = requests.post(self.address + self.addPhoneNumber_url, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #删除客户组的同时删除客户组下的号码
@@ -50,6 +57,7 @@ class CustomerManage:
         headers = {'Content-Type': 'application/json','token':token}
         data = {'id':id}
         res = requests.post(self.address+self.deleteGroupAndCustomerPhone_url, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #更新客户组
@@ -57,6 +65,7 @@ class CustomerManage:
         headers = {'Content-Type': 'application/json','token':token}
         data = {'id': id, 'groupName': groupName}
         res = requests.post(self.address+self.updateCustomerGroup_url, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #批量移动电话号码
@@ -64,4 +73,5 @@ class CustomerManage:
         headers = {'Content-Type': 'application/json','token':token}
         data = {'id': id, 'groupId': groupId}
         res = requests.post(self.address+self.movePhoneNumber_url, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)

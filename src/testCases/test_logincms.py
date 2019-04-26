@@ -17,11 +17,11 @@ class TestLoginCms(unittest.TestCase):
          '''登录'''
          global token
          res = user.login_cms(acc_cms,pawd_cms)
-         self.assertEqual(res['data']['realName'],'顾荣荣')
+         self.assertEqual(res['data']['realName'],'顾荣荣',msg=msg1)
          self.assertEqual(res['data']['userId'], 32)
          token = res['data']['token']
 
      def tearDown(self):
          logout = user.logout_cms(token)
-         self.assertEqual(logout['status'], code_1000)
+         self.assertEqual(logout['status'], code_1000,msg=msg2)
          self.assertEqual(logout['msg'],success)

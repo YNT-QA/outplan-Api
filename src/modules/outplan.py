@@ -5,9 +5,12 @@
 from requests_toolbelt import MultipartEncoder
 import requests
 import json
+from data.userinfo import *
+import unittest
 
-class OutPlan():
+class OutPlan(unittest.TestCase):
     def __init__(self,address):
+        unittest.TestCase.__init__(self)
         self.address=address
         self.addCallLog_url='/outTask/addCallLog.do'
         self.deleteOutTask_url='/outTask/deleteOutTask.do'
@@ -27,6 +30,7 @@ class OutPlan():
         headers = {'Content-Type':data.content_type, 'token': token}
 
         res=requests.post(url=self.address+self.addCallLog_url,headers=headers,data=data)
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #删除外呼计划
@@ -34,6 +38,7 @@ class OutPlan():
         headers = {'Content-Type': 'application/json', 'token': token}
         data={'planId':planId}
         res = requests.post(self.address + self.deleteOutTask_url, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #获取呼叫明细列表
@@ -42,6 +47,7 @@ class OutPlan():
         data = {'isPage': 1,'pageNum': 1,'pageSize': 10,'planId':planId,'callTime': -1,
                 'status': [-1],'callDuration': [-1],'intentionName': [-1],'sort': 2}
         res = requests.post(self.address + self.getCallDetail_url, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #创建二次外呼
@@ -50,5 +56,6 @@ class OutPlan():
         data = {'userId': userId,'sceneId': sceneId,'callType': callType,'planName': planName2,
                 'sceneName':sceneName,'sipIds':str(sip_id),'createType': createType,'phoneIds': phoneId}
         res = requests.post(self.address + self.againOutPlan_url, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 

@@ -34,13 +34,13 @@ class TestCreateOutPlan(unittest.TestCase):
         lg = Login(product_address)
         res = lg.login(account,product_password)
         token=res['data']['token']
-        self.assertEqual(res['data']['userName'],account)
+        self.assertEqual(res['data']['userName'],account,msg=msg1)
         self.assertEqual(res['data']['accountType'],1)
 
         #创建客户组手动上传号码
         csm=CustomerManage(product_address)
         res2=csm.addPhoneNumber(token,userid,phonum_list,1,auto_name)
-        self.assertEqual(res2['status'], code_1000)
+        self.assertEqual(res2['status'], code_1000,msg='创建客户组手动上传号码失败')
         self.assertEqual(res2['msg'],import_suc)
 
         #查询mongodb获取groupId
@@ -53,7 +53,7 @@ class TestCreateOutPlan(unittest.TestCase):
         #添加SIP
         sip=sipManage(product_address)
         res=sip.add_sip(token,username,password,ip,port,comment,lineType,groupSize)
-        self.assertEqual(res['status'], code_1000)
+        self.assertEqual(res['status'], code_1000,msg='添加SIP失败')
         self.assertEqual(res['msg'],success)
 
         #查询mysql获取线路id、group_number
@@ -68,7 +68,7 @@ class TestCreateOutPlan(unittest.TestCase):
         auto_test = OutPlan(product_address)
         res = auto_test.creat_outplan(token,userid,'3706',auto_name,'尚德销售纵线白名单',sip_id,groupId)
         planId = res['data']['planId']
-        self.assertEqual(res['status'], code_1000)
+        self.assertEqual(res['status'], code_1000,msg='创建外呼计划失败')
         self.assertEqual(res['msg'],success)
 
         #获取phoneid
@@ -78,13 +78,13 @@ class TestCreateOutPlan(unittest.TestCase):
 
     def test_createAgainplan(self):
         '''创建二次外呼'''
-        global planId2
+        global planId2,time_out
         # 查询mongodb外呼计划状态
         product = Mongodb(dbname,tab_calllog,db_ip,db_port)
         table = product.connect_mongodb()
 
-        flag = True
-        while flag:
+        flag = False
+        while time_out>0:
             res2 = product.mongodb_find(table, {'userId':privately, 'planName':auto_name, 'planId': planId})
             for item in res2:
                 if item['status'] == status_finish:
@@ -93,26 +93,30 @@ class TestCreateOutPlan(unittest.TestCase):
                     self.assertEqual(res['status'], code_1000)
                     self.assertEqual(res['msg'],success)
                     planId2=res['data']['planId']
-                    flag = False
+                    flag = True
             time.sleep(1)
-
+            time_out=time_out-1
+            if flag == True:
+                break
+        self.assertTrue(flag, msg='创建二次外呼失败')
 
     def tearDown(self):
         #删除客户组与号码
         res=csm.deleteGroupAndCustomerPhone(token,groupId)
-        self.assertEqual(res['status'], code_1000)
+        self.assertEqual(res['status'], code_1000,msg='删除客户组与号码失败')
         self.assertEqual(res['msg'],del_suc)
         #删除第一个计划
         res2 = auto_test.delete_outplan(token, planId)
-        self.assertEqual(res2['status'], code_1000)
+        self.assertEqual(res2['status'], code_1000,msg='删除第一个计划失败')
         self.assertEqual(res2['msg'],success)
 
         #查询mongodb外呼计划状态
         product = Mongodb(dbname,tab_calllog,db_ip,db_port)
         table = product.connect_mongodb()
 
-        flag=True
-        while flag:
+        global time_out
+        flag=False
+        while time_out > 0:
             res3 = product.mongodb_find(table, {'userId':privately, 'planName': planName2, 'planId': planId2})
             for item in res3:
                 if item['status']==status_finish:
@@ -120,18 +124,22 @@ class TestCreateOutPlan(unittest.TestCase):
                     res4 = auto_test.delete_outplan(token, planId2)
                     self.assertEqual(res4['status'], code_1000)
                     self.assertEqual(res4['msg'],success)
-                    flag=False
+                    flag=True
             time.sleep(1)
+            time_out = time_out - 1
+            if flag == True:
+                break
+        self.assertTrue(flag, msg='删除外呼计划2失败')
 
         #修改SIP禁用
         res5=sip.update_sip(token,group_number,sip_id,username,comment,ip,port,privately,lineType,groupSize)
-        self.assertEqual(res5['status'], code_1000)
+        self.assertEqual(res5['status'], code_1000,msg='修改SIP禁用失败')
         self.assertEqual(res5['msg'],success)
         #删除sip
         res6=sip.delete_sip(token,sip_id)
-        self.assertEqual(res6['status'], code_1000)
+        self.assertEqual(res6['status'], code_1000,msg='删除sip失败')
         self.assertEqual(res6['msg'],success)
         #注销用户
         logout=lg.logout(token)
-        self.assertEqual(logout['status'],code_1000)
+        self.assertEqual(logout['status'],code_1000,msg=msg2)
         self.assertEqual(logout['msg'],success)

@@ -21,7 +21,7 @@ class TestQueryScene(unittest.TestCase):
 
         res = lg.login(account,product_password)
         token=res['data']['token']
-        self.assertEqual(res['data']['userName'],account)
+        self.assertEqual(res['data']['userName'],account,msg=msg1)
         self.assertEqual(res['data']['accountType'], 1)
 
     def test_queryScene(self):
@@ -35,5 +35,5 @@ class TestQueryScene(unittest.TestCase):
 
     def tearDown(self):
         logout=lg.logout(token)
-        self.assertEqual(logout['status'],code_1000)
+        self.assertEqual(logout['status'],code_1000,msg=msg2)
         self.assertEqual(logout['msg'],success)

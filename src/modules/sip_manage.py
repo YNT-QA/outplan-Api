@@ -4,9 +4,12 @@
 # 文件: sip_manage.py
 import requests
 import json
+from data.userinfo import *
+import unittest
 
-class sipManage():
+class sipManage(unittest.TestCase):
     def __init__(self,address):
+        unittest.TestCase.__init__(self)
         self.address = address
         self.addsip_url='/sipmanager/sips.do'
         self.addsipGroup='/sipmanager/sips/addSipGroup.do'
@@ -28,6 +31,7 @@ class sipManage():
                 "location": "动态显示,undefined",
                 "industryType": [22]}
         res = requests.post(self.address + self.addsipGroup, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #修改SIP
@@ -59,6 +63,7 @@ class sipManage():
                 "caller": "",
                 "location": "动态显示,undefined"}
         res = requests.post(self.address + self.updateSip, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #删除sip线路
@@ -66,4 +71,5 @@ class sipManage():
         headers = {'Content-Type': 'application/json', 'token': token}
         data = {"id":sip_id,"lineType":lineType}
         res = requests.post(self.address + self.deletesip_url, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)

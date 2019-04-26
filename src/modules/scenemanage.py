@@ -4,9 +4,13 @@
 # 文件: scenemanage.py
 import requests
 import json
+from data.userinfo import *
+import time
+import unittest
 
-class SceneMange():
+class SceneMange(unittest.TestCase):
     def __init__(self,address):
+        unittest.TestCase.__init__(self)
         self.address=address
         self.insert='/scene/manage/insert.do'
         self.deleteScene='/scene/manage/deleteScene.do'
@@ -23,21 +27,33 @@ class SceneMange():
         headers = {'Content-Type': 'application/json', 'token': token}
         data ={"sceneName":scenename,"industryType":industrytype,"sceneTemplate":scenetemp}
         res = requests.post(self.address + self.insert, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #删除测试场景
-    def delete_scenetemp(self,token,sceneId,userId):
+    def delete_scenetemp(self,token,sceneId):
         headers = {'Content-Type': 'application/json', 'token': token}
-        data ={"sceneId":sceneId,"userId":userId}
+        data ={"sceneId":sceneId}
         res = requests.post(self.address + self.deleteScene, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #TTS
-    def compositeSpeech(self,token,text):
+    def composite_Speech(self,token,compContent):
         headers = {'Content-Type': 'application/json', 'token': token}
-        data={"compContent":text}
-        res = requests.post(self.address +self.compositeSpeech,headers=headers,data=json.dumps(data))
-        return json.loads(res.text)
+        data={"compContent":compContent}
+        res = requests.post(url=self.address +self.compositeSpeech,headers=headers,data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
+        res=json.loads(res.text)
+        audiofp = None
+        for i in range(time_out):
+            try:
+                if res['status']==code_1000 and res['msg']==success:
+                    audiofp = res['data']['audioFilePath']
+                    break
+            except:
+                time.sleep(1)
+        return audiofp
 
     #主流程添加问答
     def add_process(self,token):
@@ -84,6 +100,7 @@ class SceneMange():
             }
         }
         res = requests.post(self.address + self.add,headers=headers,data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #场景流程-》主流程-》添加结束语
@@ -107,17 +124,19 @@ class SceneMange():
                 "subProcessId": 0
             }
         res = requests.post(self.address + self.conclusion,headers=headers,data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #场景流程-》子流程-》添加子流程
-    def addSubprocess(self,token):
+    def add_Subprocess(self,token):
         headers = {'Content-Type': 'application/json', 'token': token}
         data={"processName": "safaf","sceneId":"14442"}
         res = requests.post(self.address + self.addSubprocess, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #场景问答-》添加单轮回答/1相似回答2相识回答反义词3.全匹配相似回答
-    def addAnswer(self,token):
+    def add_Answer(self,token):
         headers = {'Content-Type': 'application/json', 'token': token}
         data={
                 "sceneId": 5549,
@@ -145,10 +164,11 @@ class SceneMange():
                 "exeActionDesc": ""
             }
         res = requests.post(self.address + self.addAnswer, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #知识库-》添加知识库question:2,子流程
-    def addQuestion(self,token,knowledgeid,question,similarList,userFocus='1',exeAction='1'):
+    def add_Question(self,token,knowledgeid,question,audioPath,similarList,userFocus='1',exeAction='1',compContent='',sceneId=None):
         headers = {'Content-Type':'application/json','token':token}
         data={
                 "knowledgeId": knowledgeid,
@@ -162,20 +182,22 @@ class SceneMange():
             }
         if question=='1':
             data['audioSpeech']={
-                    "compContent": "11111111111111111111111",
-                    "sceneId": 14442,
+                    "compContent": compContent,
+                    "sceneId": sceneId,
                     "type": "knowledge",
-                    "audioFilePath": "/data1/outbound/qa/temp_tts/2019/03/27/1553690184799_00782.wav",
+                    "audioFilePath": audioPath,
                     "inputWay": 1}
 
             data['sceneDynamicAudio']=[]
         elif question=='2':
             data['exeActionId']=2305
+
         res = requests.post(self.address+self.addQuestion, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code,code_200)
         return json.loads(res.text)
 
     #用户标签-》全局标签
-    def addTag(self,token,sceneid,tagname,keywordList):
+    def add_Tag(self,token,sceneid,tagname,keywordList):
         headers = {'Content-Type': 'application/json','token':token}
         data={
                 "sceneId": sceneid,
@@ -185,4 +207,5 @@ class SceneMange():
                 "skipQuestionList": []
             }
         res = requests.post(self.address+self.addTag,headers=headers,data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)

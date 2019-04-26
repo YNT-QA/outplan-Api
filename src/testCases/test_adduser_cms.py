@@ -20,7 +20,7 @@ class TestAddUser(unittest.TestCase):
         global token,user
         user = LoginCms(pro_add_cms)
         res = user.login_cms(acc_cms,pawd_cms)
-        self.assertEqual(res['data']['realName'],'顾荣荣')
+        self.assertEqual(res['data']['realName'],'顾荣荣',msg=msg1)
         self.assertEqual(res['data']['userId'],32)
         token = res['data']['token']
 
@@ -29,7 +29,7 @@ class TestAddUser(unittest.TestCase):
         global newuser,user_id
         newuser=AccManage(pro_add_cms)
         res=newuser.add_user(token,new_user,pswd,mob_phone,auto_name)
-        self.assertEqual(res['status'], code_1000)
+        self.assertEqual(res['status'], code_1000,msg='添加正式账号失败')
         self.assertEqual(res['msg'], success)
         #查询数据库获取userid
         product_m = Mysql(myq_ip,myq_port,myq_user,myq_pswd,dbname)
@@ -42,18 +42,18 @@ class TestAddUser(unittest.TestCase):
                 flag = True
             sleep(1)
 
-        self.assertTrue(flag)
+        self.assertTrue(flag,msg='查询数据库获取userid失败')
 
     def tearDown(self):
         #删除用户
         res = newuser.delete_account(token, user_id)
         result = res(newuser.cdc_url_cms)
-        self.assertEqual(result['status'], code_1000)
+        self.assertEqual(result['status'], code_1000,msg='任务结束失败')
         self.assertEqual(result['data']['msg'], '任务已经全部结束')
         result2 = res(newuser.isak_url_cms)
-        self.assertEqual(result2['status'], code_1000)
+        self.assertEqual(result2['status'], code_1000,msg='删除用户失败')
         self.assertEqual(result2['data'], 2)
         #退出
         logout = user.logout_cms(token)
-        self.assertEqual(logout['status'],code_1000)
+        self.assertEqual(logout['status'],code_1000,msg=msg2)
         self.assertEqual(logout['msg'],success)

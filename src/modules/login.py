@@ -7,10 +7,13 @@ import json
 import hashlib
 import rsa
 import base64
+from data.userinfo import *
+import unittest
 
-class Login():
+class Login(unittest.TestCase):
 
     def __init__(self,address):
+        unittest.TestCase.__init__(self)
         self.address=address
         self.login_url = '/newLogin/doLogin'
         self.logout_url = '/newLogin/logout'
@@ -19,6 +22,7 @@ class Login():
     #获取公钥
     def get_PublicKey(self):
         res = requests.get(self.address + self.getPublicKey)
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #登录
@@ -48,10 +52,12 @@ class Login():
         data={'userName':account,'password':str(base64.b64encode(pswd),'utf-8'),'publicKey':pubkey['data']}
 
         res=requests.post(self.address+self.login_url,headers=headers,data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return  json.loads(res.text)
 
     #登出
     def logout(self,token):
         headers = {'Content-Type':'application/json','token':token}
         res=requests.get(self.address+self.logout_url,headers=headers)
+        self.assertTrue(res.status_code, code_200)
         return  json.loads(res.text)

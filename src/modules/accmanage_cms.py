@@ -4,9 +4,12 @@
 # 文件: accmanage_cms.py
 import requests
 import json
+from data.userinfo import *
+import unittest
 
-class AccManage():
+class AccManage(unittest.TestCase):
     def __init__(self,address):
+        unittest.TestCase.__init__(self)
         self.address=address
         self.adduser_url_cms='/custManager/formal'
         self.informal='/custManager/informal'
@@ -62,6 +65,7 @@ class AccManage():
             addu_url=self.adduser_url_cms
 
         res = requests.post(self.address + addu_url,headers=headers,data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #删除账号
@@ -71,6 +75,7 @@ class AccManage():
 
         def get_request(url):
             res = requests.post(self.address + url,headers=headers,data=json.dumps(data))
+            self.assertTrue(res.status_code, code_200)
             return json.loads(res.text)
 
         return get_request
@@ -87,4 +92,5 @@ class AccManage():
             "isOpen": isOpen
         }
         res = requests.post(self.address +self.updateFormalInfo, headers=headers,data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)

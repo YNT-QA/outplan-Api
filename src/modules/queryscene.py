@@ -4,18 +4,20 @@
 # 文件: queryscene.py
 import requests
 import json
+from data.userinfo import *
+import unittest
 
-class QueryScene():
+class QueryScene(unittest.TestCase):
 
     def __init__(self,address):
+        unittest.TestCase.__init__(self)
         self.address=address
         self.get_queryscene_url = '/scene/queryScene.do'
 
     def get_queryscene(self,userId,token):
         headers = {'Content-Type': 'application/json','token':token}
         data={'userid':userId}
-        try:
-            res=requests.post(url=self.address+self.get_queryscene_url,headers=headers,data=json.dumps(data))
-            return  json.loads(res.text)
-        except Exception as e:
-            print(e)
+
+        res=requests.post(url=self.address+self.get_queryscene_url,headers=headers,data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
+        return  json.loads(res.text)

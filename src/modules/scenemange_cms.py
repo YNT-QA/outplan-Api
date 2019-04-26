@@ -4,9 +4,12 @@
 # 文件: scenemange_cms.py
 import requests
 import json
+from data.userinfo import *
+import unittest
 
-class SceneMangeCms():
+class SceneMangeCms(unittest.TestCase):
     def __init__(self,address):
+        unittest.TestCase.__init__(self)
         self.address=address
         self.insert='/scene/v1.1/insert'
         self.delete='/scene/v1.1/delete'
@@ -17,6 +20,7 @@ class SceneMangeCms():
         headers = {'Content-Type': 'application/json', 'token': token}
         data ={"sceneName":scenename,"industryType":industrytype}
         res = requests.post(self.address + self.insert, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #删除示例场景
@@ -24,6 +28,7 @@ class SceneMangeCms():
         headers = {'Content-Type': 'application/json', 'token': token}
         data ={"id":id}
         res = requests.post(self.address + self.delete, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
 
     #场景发布
@@ -31,4 +36,5 @@ class SceneMangeCms():
         headers = {'Content-Type': 'application/json', 'token': token}
         data = {"id": id}
         res = requests.post(self.address + self.publish, headers=headers, data=json.dumps(data))
+        self.assertTrue(res.status_code, code_200)
         return json.loads(res.text)
